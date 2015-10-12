@@ -257,89 +257,141 @@
     return sorted;
   }
 
+  /**
+   * indexSortSuperLargeRange
+   * Attempts tp Sorts a large sized number range by transforming numbers into a X/Y/Z grid system
+   * - Not as good as indexSortLargeRange
+   */
   function indexSortSuperLargeRange(numbers,backwards) {
+    var X = 0;
+    var Y = 0;
+    var Z = 0;
+    var maxX = 4096;
+    var maxY = 4096;    
+    var positiveGrid = {};
+    var negativeGrid = {};
+    var xUnsortedNumbers = [];
+    var yUnsortedNumbers = [];
+    var zUnsortedNumbers = []; 
+    var xNumbers = [];
+    var yNumbers = [];
+    var zNumbers = [];    
+    var sorted = [];
+    /*     
+      yNumbers = [],
+      sortedYNumbers = [],
+      xNumbers = [],
+      sortedXNumbers = [],
+      sorted = [],
+      sortedBackwards = [];
+    */
     
+    // Loop through numbers, and put into grid objects
+    for(var i=0,c=numbers.length;i<c;i++) {
+      X = numbers[i];
+      Y = Math.floor(X/maxX); 
+      Z = Math.floor(Y/maxY);
+      
+      // positive numbers
+      if (Y > -1) {
+        if (!positiveGrid[Z]) {
+          positiveGrid[Z] = {};
+        }
+        if (!positiveGrid[Z][Y]) {
+          positiveGrid[Z][Y] = {};
+        }        
+        if (!positiveGrid[Z][Y][X]) {
+          positiveGrid[Z][Y][X] = 1;
+        } else  {
+          positiveGrid[Z][Y][X]++;
+        }      
+      } else {
+        // Negative Numbers
+        X = -X;
+        Y = -Y;
+        Z = -Z;
+        if (!negativeGrid[Z]) {
+          negativeGrid[Z] = {};
+        }
+        if (!negativeGrid[Z][Y]) {
+          negativeGrid[Z][Y] = {};
+        }        
+        if (!negativeGrid[Z][Y][X]) {
+          negativeGrid[Z][Y][X] = 1;
+        } else {
+          negativeGrid[Z][Y][X]++;
+        } 
+      }
+    }
+    //console.log(positiveGrid);
+    //console.log(negativeGrid);
+
+    // NEGATIVE NUMBERS
+
+    // Loop through grid objects, and put into arrays
+    zUnsortedNumbers = [];
+    for(var i in negativeGrid) {
+      zUnsortedNumbers.push(+i);
+    }
+    zNumbers = indexSort(zUnsortedNumbers);
+    for(var i=0,c=zNumbers.length;i<c;i++) {
+      for(var i2 in negativeGrid[zNumbers[i]]) {
+        yNumbers.push(+i2); 
+      }
+      yNumbers = indexSort(yNumbers);
+      for(var i2=0,c2=yNumbers.length;i2<c2;i2++) {
+        for(var i3 in negativeGrid[zNumbers[i]][yNumbers[i2]]) {
+          xNumbers.push(+i3);        
+        }
+        xNumbers = indexSort(xNumbers);
+        for(var i3=0,c3=xNumbers.length;i3<c3;i3++) {
+          if (negativeGrid[zNumbers[i]][yNumbers[i2]]) {
+            for(var i4=0;i4<negativeGrid[zNumbers[i]][yNumbers[i2]][xNumbers[i3]];i4++) {
+              sorted.unshift(-(+xNumbers[i3]));
+            }
+          } 
+        }        
+      }
+    }
+
+    // POSITIVE NUMBERS
+
+    zUnsortedNumbers = [];
+    for(var i in positiveGrid) {
+      zUnsortedNumbers.push(+i);
+    }
+    zNumbers = indexSort(zUnsortedNumbers);
+    for(var i=0,c=zNumbers.length;i<c;i++) {
+      for(var i2 in positiveGrid[zNumbers[i]]) {
+        yNumbers.push(+i2); 
+      }
+      yNumbers = indexSort(yNumbers);
+      for(var i2=0,c2=yNumbers.length;i2<c2;i2++) {
+        for(var i3 in positiveGrid[zNumbers[i]][yNumbers[i2]]) {
+          xNumbers.push(+i3);        
+        }
+        xNumbers = indexSort(xNumbers);
+        for(var i3=0,c3=xNumbers.length;i3<c3;i3++) {
+          if (positiveGrid[zNumbers[i]][yNumbers[i2]]) {
+            for(var i4=0;i4<positiveGrid[zNumbers[i]][yNumbers[i2]][xNumbers[i3]];i4++) {
+              sorted.push(+xNumbers[i3]);
+            }
+          } 
+        }        
+      }
+    }
+
+    // sort direction
+    if (backwards) {
+      var sortedBackwards = [];
+      for(var i=0,c=sorted.length;i<c;i++) {
+        sortedBackwards.unshift(sorted[i]);
+      }
+      sorted = sortedBackwards;
+    }
+
+    return sorted;
   }
-
-  /*
-    A Better Sort - Pseduo Code:
-
-    Notes: 
-      - saves memmory by storing duplicated numbers better
-      - reduces number of undefines in indexSort
-
-    Not Done:
-      - needs to be able make multiple grid objects and then index sort the keys to put back together
-
-    Technique
-      - We give the number an X/Y/Z Grid position
-        Y is how many times it is divided into maxX without remainder
-        X is { number: times duped }
-        Z is which GridObject determined by Y divided by maxY without the remainder
-      - We then put the number into an object
-      - We then indexSort the Object keys
-      - We then make a sorted array using the sorted Object keys
-        - for each row we indexSort the keys and put into sorted array
-
-    parameters:
-      numbers (int)
-      backwards (boolean)
-
-    Variables:
-      X (Object)
-      Y (int)
-      Z (int)
-      maxX (int)
-      maxY (int)
-      positiveGrid (Object)
-      negativeGrid (Object)
-      yNumbers (Array)
-      sortedYNumbers (Array)
-      xNumbers (Array)
-      sortedXNumbers (Array)
-      sorted (Array)
-      sortedBackwards (Array)
-
-    - Make Positive/Negative Grid Objects
-      - calculate number X, Y
-      - check if Y is negative
-        - make Y Positive
-        - use negative Grid Object
-      - check if Y is bigger than MaxY
-        - if it isn't
-          - check if Y exists
-            - if doesn't exist
-              - grid[Y] = { number: 1}
-            - if it does exist
-              - check if grid[Y][number] exists
-                if it doesn't exist
-                  grid[Y][number] = 1;
-                if it does exist
-                  grid[Y][number]++;
-        if it is (not sure if this is actually needed)
-          Make a new Grid Object and then follow pattern above
-
-    - We now have all numbers represented in an object
-    - but we can't loop through the object in order
-
-    - For each Grid Object
-      - Sort Y Keys
-        - loop through grid and save keys as yNumbers array
-        - sort yNumbers using simpleIndexSort(no duplicate number check needed) as sortedYNumbers array
-
-      - Sort the grid into sorted
-        - loop through sortedYNumbers
-          - get row at sortedYNumbers[i]
-          - sort row keys using simpleIndexSort(no duplicate number check needed) as sortedXNumbers array
-            - loop through sortedXNumbers
-              - foreach sortedXNumbers push sorted with key as number, once per each value
-
-      - We should now have all numbers in grid in a sorted array
-
-    - Combine All sorted arrays
-    - Check direction and reverse array if needed       
-
-  */
 
   function init() {
 
@@ -349,7 +401,7 @@
     //var numbers = generateRandomNumbers(10000000,1,50); // small set, lots of numbers
     //var numbers = generateRandomNumbers(10,-50,50); // small set with negatives
     //var numbers = generateRandomNumbers(10,1,5); // small set with dupes
-    //var numbers = generateRandomNumbers(10,-100,100); // negatives
+    //var numbers = generateRandomNumbers(100,-100000,100000); // negatives
     //var numbers = generateRandomNumbers(100,1,100000); // medium set
     //var numbers = generateRandomNumbers(100,-1000,1000); // medium set with negatives
     //var numbers = generateRandomNumbers(10,-1000000,1000000); // large set with negatives
@@ -374,6 +426,7 @@
     //var sorted = indexSortWithDuplicates(numbers);
     //var sorted = indexSortMediumRange(numbers,false);
     var sorted = indexSortLargeRange(numbers,false);
+    //var sorted = indexSortSuperLargeRange(numbers,false); // failed, not as good as indexSortLargeRange
 
     // test to see if native js sort function will work with number set
     //var sorted = numbers.sort();
