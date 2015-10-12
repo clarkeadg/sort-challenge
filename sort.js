@@ -150,7 +150,6 @@
    * - still not as good as Array.sort() but it is close
    * - Able to sort 100 million numbers, range 50
    * - Able to sort 1,000 numbers, range 100 billion
-   * - *** Idea: remove grid array and use only object map to build sorted
    */
   function indexSortLargeRange(numbers,backwards) {    
 
@@ -258,10 +257,50 @@
     return sorted;
   }
 
+  function indexSortSuperLargeRange(numbers,backwards) {
+    
+  }
+
   /*
     A Better Sort - Pseduo Code:
 
-    - Make Grid Object
+    Notes: 
+      - saves memmory by storing duplicated numbers better
+      - reduces number of undefines in indexSort
+
+    Not Done:
+      - needs to be able make multiple grid objects and then index sort the keys to put back together
+
+    Technique
+      - We give the number an X/Y/Z Grid position
+        Y is how many times it is divided into maxX without remainder
+        X is { number: times duped }
+        Z is which GridObject determined by Y divided by maxY without the remainder
+      - We then put the number into an object
+      - We then indexSort the Object keys
+      - We then make a sorted array using the sorted Object keys
+        - for each row we indexSort the keys and put into sorted array
+
+    parameters:
+      numbers (int)
+      backwards (boolean)
+
+    Variables:
+      X (Object)
+      Y (int)
+      Z (int)
+      maxX (int)
+      maxY (int)
+      positiveGrid (Object)
+      negativeGrid (Object)
+      yNumbers (Array)
+      sortedYNumbers (Array)
+      xNumbers (Array)
+      sortedXNumbers (Array)
+      sorted (Array)
+      sortedBackwards (Array)
+
+    - Make Positive/Negative Grid Objects
       - calculate number X, Y
       - check if Y is negative
         - make Y Positive
@@ -277,7 +316,7 @@
                   grid[Y][number] = 1;
                 if it does exist
                   grid[Y][number]++;
-        if it is
+        if it is (not sure if this is actually needed)
           Make a new Grid Object and then follow pattern above
 
     - We now have all numbers represented in an object
