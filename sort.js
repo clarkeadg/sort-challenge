@@ -147,7 +147,7 @@
   /**
    * indexSortLargeRange
    * Sorts a large sized number range by transforming numbers into a grid system
-   * - Able to sort 100 numbers with range 100 billion
+   * - still not as good as Array.sort() but it is close
    * - Able to sort 100 million numbers, range 50
    * - Able to sort 1,000 numbers, range 100 billion
    */
@@ -270,9 +270,18 @@
     //var numbers = generateRandomNumbers(100,-1000,1000); // medium set with negatives
     //var numbers = generateRandomNumbers(10,-1000000,1000000); // large set with negatives
     //var numbers = generateRandomNumbers(100,1,100000000); // extra large set
-    var numbers = generateRandomNumbers(100,-100000000,100000000); // extra large set with negatives
+    //var numbers = generateRandomNumbers(100,-100000000,100000000); // extra large set with negatives
     //var numbers = generateRandomNumbers(500,-50000000000,50000000000); // super extra large set with negatives
-    //var numbers = generateRandomNumbers(1000,-50000000000,50000000000); // super extra large set with lots of numbers
+    
+    // my best
+    //var numbers = generateRandomNumbers(10000000,1,50); // almost overheats computer but works
+    var numbers = generateRandomNumbers(1000,-50000000000,50000000000); // super extra large set with lots of numbers
+
+    // beyond my skill
+    //var numbers = generateRandomNumbers(1000000,-50000000000,50000000000); // super extra large set with lots of numbers
+
+    // beyond native js sort
+    //var numbers = generateRandomNumbers(100000000,-50000000000,50000000000); // super extra large set with lots of numbers
 
 
     //console.log(numbers,numbers.length); 
@@ -281,6 +290,9 @@
     //var sorted = indexSortWithDuplicates(numbers);
     //var sorted = indexSortMediumRange(numbers,false);
     var sorted = indexSortLargeRange(numbers,false);
+
+    // test to see if native js sort function will work with number set
+    //var sorted = numbers.sort();
 
     console.log(sorted,sorted.length);    
   }
