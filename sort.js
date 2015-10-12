@@ -150,6 +150,7 @@
    * - still not as good as Array.sort() but it is close
    * - Able to sort 100 million numbers, range 50
    * - Able to sort 1,000 numbers, range 100 billion
+   * - *** Idea: remove grid array and use only object map to build sorted
    */
   function indexSortLargeRange(numbers,backwards) {    
 
@@ -256,6 +257,50 @@
 
     return sorted;
   }
+
+  /*
+    A Better Sort - Pseduo Code:
+
+    - Make Grid Object
+      - calculate number X, Y
+      - check if Y is negative
+        - make Y Positive
+        - use negative Grid Object
+      - check if Y is bigger than MaxY
+        - if it isn't
+          - check if Y exists
+            - if doesn't exist
+              - grid[Y] = { number: 1}
+            - if it does exist
+              - check if grid[Y][number] exists
+                if it doesn't exist
+                  grid[Y][number] = 1;
+                if it does exist
+                  grid[Y][number]++;
+        if it is
+          Make a new Grid Object and then follow pattern above
+
+    - We now have all numbers represented in an object
+    - but we can't loop through the object in order
+
+    - For each Grid Object
+      - Sort Y Keys
+        - loop through grid and save keys as yNumbers array
+        - sort yNumbers using simpleIndexSort(no duplicate number check needed) as sortedYNumbers array
+
+      - Sort the grid into sorted
+        - loop through sortedYNumbers
+          - get row at sortedYNumbers[i]
+          - sort row keys using simpleIndexSort(no duplicate number check needed) as sortedXNumbers array
+            - loop through sortedXNumbers
+              - foreach sortedXNumbers push sorted with key as number, once per each value
+
+      - We should now have all numbers in grid in a sorted array
+
+    - Combine All sorted arrays
+    - Check direction and reverse array if needed       
+
+  */
 
   function init() {
 
